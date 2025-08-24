@@ -181,7 +181,6 @@
     }
     .slider-vertical input[type="range"] { width: clamp(120px, 25vw, 250px); }
 
-    /* Media Queries */
     @media (max-width: 768px) {
       .carousel-wrapper { width: 90vw; height: 60vh; }
       .album-bg { width: 100vw; height: 100vh; }
@@ -196,28 +195,28 @@
 </head>
 <body>
 
-  <img src="/Images/memories.jpg" alt="Background" class="album-bg hide" id="albumBg">
+  <img src="Images/memories.jpg" alt="Background" class="album-bg hide" id="albumBg">
 
   <div class="intro-overlay" id="introOverlay">
-    <img src="/Images/memories.jpg" class="intro-image" id="introImage">
+    <img src="Images/memories.jpg" class="intro-image" id="introImage">
     <div class="intro-text"><br><span style="font-size:1.2rem;"></span></div>
   </div>
 
   <div class="carousel-wrapper hide" id="carouselWrapper">
     <div class="carousel">
-      <img src="/Images/IMG_20250810_183353_178_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183354_906_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183403_018_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183413_127_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183430_915_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183433_801_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183500_427_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183641_584_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183702_740_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_183721_331_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_184924_764_AI.jpg" alt="">
-      <img src="/Images/IMG_20250810_184937_371_AI.jpg" alt="">
-      <img src="/Images/IMG_20250811_102311_105_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183353_178_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183354_906_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183403_018_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183413_127_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183430_915_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183433_801_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183500_427_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183641_584_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183702_740_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_183721_331_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_184924_764_AI.jpg" alt="">
+      <img src="Images/IMG_20250810_184937_371_AI.jpg" alt="">
+      <img src="Images/IMG_20250811_102311_105_AI.jpg" alt="">
     </div>
   </div>
 
@@ -284,16 +283,9 @@
     Promise.all(Array.from(images).map(img=>new Promise(resolve=>img.complete?resolve():img.onload=resolve)))
       .then(()=>{ positionImages(); animate(); });
 
-    // Hover stops rotation, click zooms
     images.forEach((img, idx) => {
-      img.addEventListener('mouseenter', () => {
-        autoRotate = false; // stop rotation on hover
-      });
-
-      img.addEventListener('mouseleave', () => {
-        if(focusedIndex === null) autoRotate = true; // resume only if no zoom
-      });
-
+      img.addEventListener('mouseenter', () => { autoRotate = false; });
+      img.addEventListener('mouseleave', () => { if(focusedIndex === null) autoRotate = true; });
       img.addEventListener('click', () => {
         if(focusedIndex === idx){
           img.classList.remove('focused');
@@ -305,7 +297,6 @@
           focusedIndex = idx;
           images.forEach(im => im.classList.remove('focused','straight'));
           img.classList.add('focused');
-
           let straightCount=0;
           for(let i=0;i<imgCount;i++){
             if(i!==idx){
@@ -318,17 +309,16 @@
       });
     });
 
+    carouselWrapper.addEventListener('click', (e) => {
+      if (focusedIndex !== null && !e.target.closest('img')) {
+        images[focusedIndex].classList.remove('focused');
+        images.forEach(im => im.classList.remove('straight'));
+        focusedIndex = null;
+        positionImages();
+        autoRotate = true;
+      }
+    });
 
-    // Click outside any image to release zoom
-carouselWrapper.addEventListener('click', (e) => {
-  if (focusedIndex !== null && !e.target.closest('img')) {
-    images[focusedIndex].classList.remove('focused');
-    images.forEach(im => im.classList.remove('straight'));
-    focusedIndex = null;
-    positionImages();
-    autoRotate = true;
-  }
-});
     xSlider.addEventListener('input',()=>{ carouselWrapper.style.left=`${xSlider.value}vw`; });
     ySlider.addEventListener('input',()=>{ carouselWrapper.style.top=`${ySlider.value}vh`; });
     window.addEventListener('resize',positionImages);
