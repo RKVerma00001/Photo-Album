@@ -181,7 +181,6 @@
     }
     .slider-vertical input[type="range"] { width: clamp(120px, 25vw, 250px); }
 
-    /* Media Queries */
     @media (max-width: 768px) {
       .carousel-wrapper { width: 90vw; height: 60vh; }
       .album-bg { width: 100vw; height: 100vh; }
@@ -284,16 +283,9 @@
     Promise.all(Array.from(images).map(img=>new Promise(resolve=>img.complete?resolve():img.onload=resolve)))
       .then(()=>{ positionImages(); animate(); });
 
-    // Hover stops rotation, click zooms
     images.forEach((img, idx) => {
-      img.addEventListener('mouseenter', () => {
-        autoRotate = false; // stop rotation on hover
-      });
-
-      img.addEventListener('mouseleave', () => {
-        if(focusedIndex === null) autoRotate = true; // resume only if no zoom
-      });
-
+      img.addEventListener('mouseenter', () => { autoRotate = false; });
+      img.addEventListener('mouseleave', () => { if(focusedIndex === null) autoRotate = true; });
       img.addEventListener('click', () => {
         if(focusedIndex === idx){
           img.classList.remove('focused');
@@ -305,7 +297,6 @@
           focusedIndex = idx;
           images.forEach(im => im.classList.remove('focused','straight'));
           img.classList.add('focused');
-
           let straightCount=0;
           for(let i=0;i<imgCount;i++){
             if(i!==idx){
@@ -318,22 +309,19 @@
       });
     });
 
+    carouselWrapper.addEventListener('click', (e) => {
+      if (focusedIndex !== null && !e.target.closest('img')) {
+        images[focusedIndex].classList.remove('focused');
+        images.forEach(im => im.classList.remove('straight'));
+        focusedIndex = null;
+        positionImages();
+        autoRotate = true;
+      }
+    });
 
-    // Click outside any image to release zoom
-carouselWrapper.addEventListener('click', (e) => {
-  if (focusedIndex !== null && !e.target.closest('img')) {
-    images[focusedIndex].classList.remove('focused');
-    images.forEach(im => im.classList.remove('straight'));
-    focusedIndex = null;
-    positionImages();
-    autoRotate = true;
-  }
-});
     xSlider.addEventListener('input',()=>{ carouselWrapper.style.left=`${xSlider.value}vw`; });
     ySlider.addEventListener('input',()=>{ carouselWrapper.style.top=`${ySlider.value}vh`; });
     window.addEventListener('resize',positionImages);
   </script>
 </body>
 </html>
-
-
